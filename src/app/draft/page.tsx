@@ -246,7 +246,7 @@ export default function DraftPage() {
             top: '50%',
             right: 0,
             transform: 'translateY(-30%)',
-            height: 80,
+            height: 100,
             width: 'auto',
             objectFit: 'contain',
             clipPath: 'inset(12.5% 10% 55% 10%)',
