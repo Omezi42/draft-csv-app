@@ -21,9 +21,13 @@ const TYPE_ORDER = ['モンスター', '魔法', '罠', 'フィールド', 'エ�
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c'];
 const COST_CATEGORIES = ['0', '1', '2', '3', '4', '5', '6', '7+'];
 
+let prevId: string | null = null;
+
 export default function DraftPage() {
   const [pickCandidates, setPickCandidates] = useState<Card[]>([]);
   const [normalEnergyCard, setNormalEnergyCard] = useState<Card | null>(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyModalIndex, setHistoryModalIndex] = useState(0);
   const [currentPick, setCurrentPick] = useState<Card[]>([]);
   const [deck, setDeck] = useState<Card[]>([]);
 
@@ -50,7 +54,18 @@ export default function DraftPage() {
   // generate picks
   const generatePick = () => {
     if (!pickCandidates.length) return;
-    setCurrentPick([...pickCandidates].sort(() => Math.random() - 0.5).slice(0, 3));
+    // deck に既に何枚入っているかを数える
+    const eligible = pickCandidates.filter(c => {
+      const inDeckCount = deck.filter(d => d.id === c.id).length;
+      // テキストに「※何枚でも…」があれば無制限
+      const unlimited = c.text?.includes('※このカードは何枚でもデッキに入れる事ができる。');
+      return unlimited || inDeckCount < 4;
+    });
+    setCurrentPick(
+      eligible
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+    );
   };
   useEffect(() => { if (pickCandidates.length) generatePick(); }, [pickCandidates]);
 
@@ -94,7 +109,8 @@ export default function DraftPage() {
 
   // sorted deck
   const sortedDeck = useMemo(() => [...deck].sort((a, b) => {
-    const getType = (c: Card) => c.cardType.split(',').map(t => t.trim()).find(t => TYPE_ORDER.includes(t)) || c.cardType;
+    const getType = (c: Card) =>
+      c.cardType.split(',').map(t => t.trim()).find(t => TYPE_ORDER.includes(t))!;
     const ta = TYPE_ORDER.indexOf(getType(a));
     const tb = TYPE_ORDER.indexOf(getType(b));
     if (ta !== tb) return ta - tb;
@@ -104,6 +120,7 @@ export default function DraftPage() {
     return Number(a.id) - Number(b.id);
   }), [deck]);
 
+  let prevId: string | null = null;
   const isDraftComplete = deck.length >= totalPicks;
 
   return (
@@ -145,46 +162,108 @@ export default function DraftPage() {
             <div style={{ marginTop: '2rem' }}>
               <h3>ピック履歴</h3>
               <ul style={{ listStyle: 'none', padding: 0 }}>
-                {deck.map((card, i) => (
-                  <li key={i} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => openDeckModal(i)}>
-                    {card.name} ({card.cardType})
-                  </li>
-                ))}
+              {deck.map((card, i) => (
+    <li key={i}
+        onClick={() => {
+          setHistoryModalIndex(i);
+          setHistoryModalOpen(true);
+        }}
+        style={{cursor: 'pointer', textDecoration: 'underline'}}>
+      {card.name} ({card.cardType})
+    </li>
+  ))}
               </ul>
             </div>
           </>
         ) : (
-          <div>
-            <h1>デッキ一覧</h1>
-            <div style={{ display: 'grid', gridTemplateRows: 'repeat(10, auto)', gridAutoFlow: 'column', gap: '1rem' }}>
-              {sortedDeck.map((card, i) => (
-                <div key={i} style={{ position: 'relative', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: 'bold' }}>{card.cost}</span>
-                  <span style={{ position: 'relative', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }} onClick={() => openDeckModal(i)}>
-                    {card.name}
-                    <img
-                      src={`/images/${card.id}.png`}
-                      alt=""
-                      style={{
-                        position: 'absolute',
-                        top: -10,
-                        right: -90,       // カード幅や余白に合わせて調整
-                        width: 80,
-                        height: 80,
-                        clipPath: 'inset(12.5% 10% 55% 10%)',
-                        opacity: 0.2,
-                        left: '100%',
-                        marginLeft: '8px',
-                      }}
-                    />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+           <section>
+              <h1>デッキ一覧</h1>
+              <div style={{
+                display: 'grid',
+                gridTemplateRows: 'repeat(10, auto)',
+                gridAutoFlow: 'column',
+                gap: 12,
+              }}>
+                {/* …省略… */}
+{sortedDeck.map((card, i) => {
+  const badgeWidth = 40;
+  const showCost = card.id !== prevId;
+  prevId = card.id;
 
+  return (
+    // カード＋コストを横一列に
+    <div
+      key={i}
+      style={{
+        display: 'flex',
+        marginLeft: showCost ? 0 : badgeWidth,
+        alignItems: 'stretch',     // 高さを揃える
+        gap: 0,                    // バッジと枠はぴったりくっつける
+      }}
+    >
+      {/* コストバッジ */}
+      {showCost && (
+        <div
+          style={{
+            backgroundColor: '#4caf50',
+            color: 'white',
+            padding: '0 15px',              // 横は余白、縦は枠に合わせる
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+          }}
+        >
+          {card.cost}
+        </div>
+      )}
+
+      {/* カード枠 */}
+      <div
+        style={{
+          position: 'relative',
+          border: '1px solid #999',
+          borderRadius: showCost ? '0 4px 4px 0' : '4px',
+          padding: 8,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          flexGrow: 1,                   // 枠部分が残り幅を使う
+        }}
+        onClick={() => openDeckModal(i)}
+      >
+        <span style={{ fontWeight: 'bold', cursor: 'pointer' }}>
+          {card.name}
+        </span>
+
+        {/* 背景イメージ */}
+        <img
+          src={`/images/${card.id}.png`}
+          alt={card.name}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            right: 0,
+            transform: 'translateY(-30%)',
+            height: 80,
+            width: 'auto',
+            objectFit: 'contain',
+            clipPath: 'inset(12.5% 10% 55% 10%)',
+            opacity: 0.2,
+            zIndex: 0,
+          }}
+        />
+      </div>
+    </div>
+  );
+})}
+{/* …省略… */}
+
+              </div>
+            </section>
+          )}
+        </section>
       {/* Charts */}
       <section>
         {deck.length > 0 && (
@@ -224,6 +303,16 @@ export default function DraftPage() {
           onNext={nextPreview}
         />
       )}
+      {/* 履歴専用モーダル */}
+{historyModalOpen && (
+  <CardModal
+    cards={deck}                    // ソート前の deck
+    index={historyModalIndex}
+    onClose={() => setHistoryModalOpen(false)}
+    onPrev={() => setHistoryModalIndex(i => (i - 1 + deck.length) % deck.length)}
+    onNext={() => setHistoryModalIndex(i => (i + 1) % deck.length)}
+  />
+)}
       {deckModalOpen && (
         <CardModal
           cards={sortedDeck}
@@ -236,3 +325,4 @@ export default function DraftPage() {
     </main>
   );
 }
+ 

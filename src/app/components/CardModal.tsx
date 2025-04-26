@@ -19,7 +19,7 @@ export function CardModal({ cards, index, onClose, onPrev, onNext }: Props) {
         <Image
           src={`/images/${card.id}.png`}
           alt={card.name}
-          width={300} height={300}
+          width={400} height={400}
         />
         <h2>{card.name}</h2>
         <p>コスト: {card.cost}　パワー: {card.power}</p>
