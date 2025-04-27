@@ -70,9 +70,21 @@ export default function DraftPage() {
   useEffect(() => { if (pickCandidates.length) generatePick(); }, [pickCandidates]);
 
   // pick handlers
-  const handleCardPick = (card: Card) => { setDeck(d => [...d, card]); generatePick(); };
-  const handleEnergyPick = () => { if (normalEnergyCard) { setDeck(d => [...d, normalEnergyCard]); generatePick(); } };
+  const handleCardPick = (card: Card) => {
+    setDeck(d => [...d, card]);
+  };
+  const handleEnergyPick = () => {
+    if (!normalEnergyCard) return;
+    setDeck(d => [...d, normalEnergyCard]);
+  };
 
+  // deck が増えたタイミングで新しいピックを生成
+  useEffect(() => {
+    if (deck.length < totalPicks) {
+      generatePick();
+    }
+  }, [deck]);
+  
   // Preview modal handlers
   const openPreview = (idx: number) => { setPreviewIndex(idx); setPreviewOpen(true); };
   const closePreview = () => setPreviewOpen(false);
