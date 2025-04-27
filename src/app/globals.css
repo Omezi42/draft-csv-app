@@ -19,14 +19,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  padding: 1rem;                /* 余白を入れて上下に隙間を確保 */
+  box-sizing: border-box;
+  overflow: auto;               /* モーダルが大きいときスクロールする */
 }
 .modal-content {
   background: white;
   border-radius: 8px;
   padding: 1.5rem;
-  max-width: 90vw; width: 400px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  max-width: 35%;              /* 横幅は画面の 90% まで */
+  max-height: 90%;             /* 高さは画面の 90% まで */
+  overflow-y: auto;             /* 縦にあふれたらスクロール */
+  display: flex;
+  flex-direction: column;
+  align-items: center;          /* 子要素を水平方向中央揃え */
 }
 
 /* あの頃ボタン風 */
@@ -39,6 +45,7 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: background .2s, color .2s;
+  white-space: nowrap;
 }
 .btn:hover {
   background: var(--primary-green);
@@ -51,3 +58,48 @@ body {
 .btn-prev:hover {
   background: var(--secondary-green);
 }
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;     /* 無効時に半透明に */
+  background: #eee; /* 必要なら色も変える */
+  color: #999;
+  border-color: #999;
+}
+
+/* 1) チョーク風フォントを読み込む */
+@font-face {
+  font-family: 'ChalkFont';
+  src: url('/data/ChalkFont.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2) ベースにチョークボード背景を当てる */
+html, body, #__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.main-board {
+  background: url('/images/bg-pattern.png') top center no-repeat;
+  background-position: top center; /* 上寄せ */
+  background-size: 100% auto;      /* 横幅100%、高さは自動 */
+  min-height: 100%;               /* 少なくとも画面全体の高さを確保 */
+  background-size: cover; /* 縦横比を保ったまま要素内に収まる */
+  background-color: #553a21; /* 余白部分の背景色 */
+  font-family: 'ChalkFont', sans-serif;
+  color:white;
+}
+
+
+/* 4) カード選択枠のクラス */
+.card-frame-1 { background: url('/images/CardPick1.png') no-repeat center/contain;
+  padding: 14px;       /* 枠と中身の余白を作る */
+  position: relative; /* 中のテキストやボタンを上に重ねるため */ }
+.card-frame-2 { background: url('/images/CardPick2.png') no-repeat center/contain;
+  padding: 14px;       /* 枠と中身の余白を作る */
+  position: relative; /* 中のテキストやボタンを上に重ねるため */ }
+.card-frame-3 { background: url('/images/CardPick3.png') no-repeat center/contain;
+  padding: 14px;       /* 枠と中身の余白を作る */
+  position: relative; /* 中のテキストやボタンを上に重ねるため */ }
+
