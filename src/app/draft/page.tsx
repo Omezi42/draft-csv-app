@@ -313,7 +313,7 @@ export default function DraftPage() {
                           cursor: 'pointer',
                           textDecoration: 'underline',
                         }}
-                        onClick={() => openDeckModal(i)}
+                        onClick={() => openPreview(i)}
                       >
                         {card.name} ({card.cardType})
                       </li>
