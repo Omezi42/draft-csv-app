@@ -386,13 +386,20 @@ export default function DraftPage() {
         style={{
           display: showDeckList ? 'block' : 'none',
           gridColumn: '1 / -1',
-          maxWidth: '90%',
+          maxWidth: '100%',
           margin: '0 auto',
           padding: '2rem 0',
         }}
       >
         <h2 className="section-title" style={{ marginTop: '-2rem' }}>
           アリーナデッキ
+          <button
+      className="btn"
+      style={{ marginLeft:'60%',fontSize:'60%' }}
+      onClick={() => setIsReadyForDeckList(false)}
+    >
+      戻る
+    </button>
         </h2>
         <div
           style={{
