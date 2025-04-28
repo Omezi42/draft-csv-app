@@ -177,398 +177,312 @@ export default function DraftPage() {
   const showDeckList = hasPickedAll && isReadyForDeckList;
 
   return (
-    <main className="main-board">
-      { !showDeckList ? (
-        <div
-          className="layout"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '5fr 3fr',
-            padding: '2rem',
-            backgroundImage: 'url(/images/bg-pattern.png)',
-            backgroundSize: 'cover',
-          }}
-        >
-          {/* ────────────────────── */}
-          {/* 左カラム：ドラフト操作＋グラフ */}
-          {/* ────────────────────── */}
-          <div className="left-panel">
-            {/* カード選択セクション */}
-            <section className="draft-section">
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
-              >
-                <h2
-                  className="section-title"
-                  style={{ marginLeft: '2rem' }}
-                >
-                  カード選択
-                </h2>
-                {normalEnergyCard && (
-                  <button
-                    className="btn energy-btn"
-                    disabled={hasPickedAll}
-                    onClick={() => handleEnergyPick()}
-                    style={{
-                      opacity: hasPickedAll ? 0.5 : 1,
-                      cursor: hasPickedAll ? 'not-allowed' : 'pointer',
-                      marginLeft: '1rem',
-                    }}
-                  >
-                    ノーマルエネルギーを選択
-                  </button>
-                )}
-              </div>
-              <div
-                className="draft-controls"
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
-                <div
-                  className="draft-candidates"
+    <main
+      className="main-board"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '5fr 3fr',
+        padding: '2rem',
+        backgroundImage: 'url(/images/bg-pattern.png)',
+        backgroundSize: 'cover',
+      }}
+    >
+      {/** ──────────────── */}
+      {/** ドラフト画面 ──────────────── */}
+      <div
+        className="draft-ui"
+        style={{
+          display: showDeckList ? 'none' : 'flex',
+          width: '100%',
+          gridColumn: '1 / -1',
+        }}
+      >
+        {/* 左カラム：カード選択＋グラフ */}
+        <div className="left-panel" style={{ flex: 5 }}>
+          {/* カード選択セクション */}
+          <section className="draft-section">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <h2 className="section-title" style={{ marginLeft: '2rem',whiteSpace: 'nowrap' }}>
+                カード選択
+              </h2>
+              {normalEnergyCard && (
+                <button
+                  className="btn energy-btn"
+                  disabled={hasPickedAll}
+                  onClick={handleEnergyPick}
                   style={{
-                    display: 'flex',
-                    gap: '1rem',
-                    flexWrap: 'wrap',
-                    marginLeft: '2rem',
+                    opacity: hasPickedAll ? 0.5 : 1,
+                    cursor: hasPickedAll ? 'not-allowed' : 'pointer',
+                    marginLeft: '10rem',
                   }}
                 >
-                  {currentPick.map((card, idx) => (
-                    <div
-                      key={card.id}
-                      className={`card-frame-${idx + 1}`}
-                      style={{ width: '30%', textAlign: 'center' }}
-                    >
-                      <img
-                        src={`/images/${card.id}.png`}
-                        alt={card.name}
-                        onClick={() => openPreview(idx)}
-                        style={{
-                          width: '100%',
-                          cursor: hasPickedAll
-                            ? 'not-allowed'
-                            : 'pointer',
-                          pointerEvents: hasPickedAll
-                            ? 'none'
-                            : 'auto',
-                          opacity: hasPickedAll ? 0 : 1,
-                        }}
-                      />
-                      <div
-                        onClick={() => openPreview(idx)}
-                        style={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          textDecoration: 'underline',
-                          cursor: hasPickedAll
-                            ? 'default'
-                            : 'pointer',
-                          color: 'black',
-                          pointerEvents: hasPickedAll
-                            ? 'none'
-                            : 'auto',
-                          opacity: hasPickedAll ? 0 : 1,
-                        }}
-                      >
-                        {card.name}
-                      </div>
-                      <button
-                        className="btn"
-                        disabled={hasPickedAll}
-                        onClick={() => handleCardPick(card)}
-                        style={{
-                          cursor: hasPickedAll
-                            ? 'not-allowed'
-                            : 'pointer',
-                          opacity: hasPickedAll ? 0.5 : 1,
-                          height: '13%',
-                        }}
-                      >
-                        選択
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* 統計グラフセクション */}
-            <section className="stats-section">
+                  ノーマルエネルギーを選択
+                </button>
+              )}
+            </div>
+            <div className="draft-controls" style={{ display: 'flex', alignItems: 'center' }}>
               <div
-                className="charts"
+                className="draft-candidates"
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
+                  gap: '1rem',
+                  flexWrap: 'wrap',
                   marginLeft: '2rem',
                 }}
               >
-                <PieChart width={200} height={200}>
-                  <Pie
-                    data={typeData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    labelLine={false}
-                  >
-                    {typeData.map((d, i) => (
-                      <Cell key={i} fill={d.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-                <div
-                  className="legend"
-                  style={{ marginLeft: '0.5rem' }}
-                >
-                  {typeData.map((d, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        fontFamily: 'ChalkFont',
-                        color: '#fff',
-                      }}
-                    >
-                      ■ {d.name}: {d.value} 枚
-                    </div>
-                  ))}
-                </div>
-                <ResponsiveContainer width="40%" height={200}>
-                  <BarChart
-                    data={manaData}
-                    margin={{
-                      top: 20,
-                      right: 20,
-                      bottom: 20,
-                      left: 20,
-                    }}
-                  >
-                    <XAxis
-                      dataKey="cost"
-                      stroke="#fff"
-                      tick={{
-                        fontFamily: 'ChalkFont',
-                        fill: '#fff',
-                      }}
-                    />
-                    <YAxis
-                      stroke="#fff"
-                      tick={{
-                        fontFamily: 'ChalkFont',
-                        fill: '#fff',
-                      }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#333',
-                        borderRadius: 4,
-                      }}
-                      itemStyle={{
-                        fontFamily: 'ChalkFont',
-                        color: '#fff',
-                      }}
-                    />
-                    <Bar dataKey="count" fill="#82ca9d" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
-          </div>
-
-          {/* ────────────────────── */}
-          {/* 右カラム：ピック履歴 */}
-          {/* ────────────────────── */}
-          <div
-            className="right-panel"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100%',
-            }}
-          >
-            <section
-              className="history-section"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-              }}
-            >
-              <h2 className="section-title">ピック履歴</h2>
-              <p>
-                デッキ枚数: {deck.length} / {totalPicks}
-              </p>
-              <div
-                style={{
-                  flex: '1 1 auto',
-                  minHeight: '55vh',
-                  maxHeight: '55vh',
-                  overflowY: 'auto',
-                  border: '1px solid #ccc',
-                  borderRadius: 4,
-                  padding: '0.5rem',
-                }}
-              >
-                <ul
-                  style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: 0,
-                  }}
-                >
-                  {deck.map((card, i) => (
-                    <li
-                      key={i}
-                      onClick={() => openHistoryModal(i)}
-                      style={{
-                        padding: '0.25rem 0',
-                        borderBottom: '1px solid #eee',
-                        cursor: 'pointer',
-                        textDecoration: 'underline',
-                      }}
-                    >
-                      {card.name} ({card.cardType})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <section
-                className="toggle-decklist-section"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '1rem 0',
-                }}
-              >
-                <button
-                  className="btn"
-                  disabled={!hasPickedAll}
-                  onClick={() => setIsReadyForDeckList(true)}
-                  style={{
-                    opacity: hasPickedAll ? 1 : 0.5,
-                    cursor: hasPickedAll
-                      ? 'pointer'
-                      : 'not-allowed',
-                  }}
-                >
-                  デッキ一覧を表示する
-                </button>
-              </section>
-            </section>
-          </div>
-        </div>
-      ) : (
-        /* デッキ一覧画面（全画面） */
-        <section
-        className="decklist-section"
-        style={{
-          gridColumn: '1 / -1',                /* 必要なら全幅使う */
-          maxWidth: '90%', margin: '0 auto',
-          padding: '1rem',
-          height: 'calc(100% - 4rem)',         /* main-board の padding を考慮 */
-          overflowY: 'auto',                   /* はみ出たらスクロール */
-        }}
-      >
-          <h2 className="section-title" style={{marginTop:'2rem'}}>アリーナデッキ</h2>
-          <div
-      style={{
-        display: 'grid',
-        gridAutoFlow: 'column',
-        gridTemplateRows: 'repeat(10, auto)',
-        gap: '0.5rem',
-        marginTop: '2rem',
-      }}
-    >
-            {sortedDeck.map((card, i) => {
-              const showCost = card.id !== prevId;
-              prevId = card.id;
-              return (
-                <div
-                  key={i}
-                  onClick={() => openDeckModal(i)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'stretch',
-                    gap: 0,
-                    marginLeft: showCost ? 0 : 40,
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                  }}
-                >
-                  {showCost && (
-                    <div
-                      style={{
-                        backgroundColor: '#4caf50',
-                        color: 'white',
-                        padding: '0 15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 4,
-                        borderBottomLeftRadius: 4,
-                        cursor:'pointer'
-                      }}
-                    >
-                      {card.cost}
-                    </div>
-                  )}
+                {currentPick.map((card, idx) => (
                   <div
-                    style={{
-                      position: 'relative',
-                      border: '1px solid #999',
-                      borderRadius: showCost
-                        ? '0 4px 4px 0'
-                        : '4px',
-                      padding: 8,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      flexGrow: 1,
-                      cursor:'pointer'
-                    }}
+                    key={card.id}
+                    className={`card-frame-${idx + 1}`}
+                    style={{ width: '30%', textAlign: 'center' }}
                   >
-                    <span
-                      style={{
-                        fontWeight: 'bold',
-                        color: 'black',
-                        whiteSpace:'nowrap',
-                        overflow:'hidden',
-                        textOverflow:'ellipsis'
-                      }}
-                    >
-                      {card.name}
-                    </span>
                     <img
                       src={`/images/${card.id}.png`}
                       alt={card.name}
+                      onClick={() => openPreview(idx)}
                       style={{
-                        position: 'absolute',
-                        top: '50%',
-                        right: 0,
-                        transform: 'translateY(-30%)',
-                        height: 100,
-                        width: 'auto',
-                        objectFit: 'contain',
-                        clipPath:
-                          'inset(12.5% 10% 55% 10%)',
-                        opacity: 0.2,
-                        zIndex: 0,
+                        width: '100%',
+                        cursor: hasPickedAll ? 'not-allowed' : 'pointer',
+                        pointerEvents: hasPickedAll ? 'none' : 'auto',
+                        opacity: hasPickedAll ? 0 : 1,
                       }}
                     />
+                    <div
+                      onClick={() => openPreview(idx)}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        textDecoration: 'underline',
+                        cursor: hasPickedAll ? 'default' : 'pointer',
+                        color: 'black',
+                        pointerEvents: hasPickedAll ? 'none' : 'auto',
+                        opacity: hasPickedAll ? 0 : 1,
+                      }}
+                    >
+                      {card.name}
+                    </div>
+                    <button
+                      className="btn"
+                      disabled={hasPickedAll}
+                      onClick={() => handleCardPick(card)}
+                      style={{
+                        cursor: hasPickedAll ? 'not-allowed' : 'pointer',
+                        opacity: hasPickedAll ? 0.5 : 1,
+                        height: '13%',
+                      }}
+                    >
+                      選択
+                    </button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+                ))}
+              </div>
+            </div>
+          </section>
 
-      {/* モーダル群 */}
+          {/* 統計グラフセクション */}
+          <section className="stats-section">
+            <div
+              className="charts"
+              style={{ display: 'flex', alignItems: 'center', marginLeft: '2rem' }}
+            >
+              <PieChart width={200} height={200}>
+                <Pie
+                  data={typeData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  labelLine={false}
+                >
+                  {typeData.map((d, i) => (
+                    <Cell key={i} fill={d.fill} />
+                  ))}
+                </Pie>
+              </PieChart>
+              <div className="legend" style={{ marginLeft: '0.5rem' }}>
+                {typeData.map((d, i) => (
+                  <div key={i} style={{ fontFamily: 'ChalkFont', color: '#fff' }}>
+                    ■ {d.name}: {d.value} 枚
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="40%" height={200}>
+                <BarChart data={manaData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                  <XAxis dataKey="cost" stroke="#fff" tick={{ fontFamily: 'ChalkFont', fill: '#fff' }} />
+                  <YAxis stroke="#fff" tick={{ fontFamily: 'ChalkFont', fill: '#fff' }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#333', borderRadius: 4 }}
+                    itemStyle={{ fontFamily: 'ChalkFont', color: '#fff' }}
+                  />
+                  <Bar dataKey="count" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </div>
+
+        {/* 右カラム：ピック履歴 + 切り替えボタン */}
+        <div className="right-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%',flex: 3 }}>
+          <section
+            className="history-section"
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          >
+            <h2 className="section-title">ピック履歴</h2>
+            <p>デッキ枚数: {deck.length} / {totalPicks}</p>
+            <div
+              style={{
+                flex: '1 1 auto',
+                minHeight: '55vh',
+                maxHeight: '70vh',
+                overflowY: 'auto',
+                border: '1px solid #ccc',
+                borderRadius: 4,
+                padding: '0.5rem',
+              }}
+            >
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {deck.map((card, i) => (
+                  <li
+                    key={i}
+                    onClick={() => openHistoryModal(i)}
+                    style={{
+                      padding: '0.25rem 0',
+                      borderBottom: '1px solid #eee',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    {card.name} ({card.cardType})
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <section
+              className="toggle-decklist-section"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 0' }}
+            >
+              <button
+                className="btn"
+                disabled={!hasPickedAll}
+                onClick={() => setIsReadyForDeckList(true)}
+                style={{
+                  opacity: hasPickedAll ? 1 : 0.5,
+                  cursor: hasPickedAll ? 'pointer' : 'not-allowed',
+                }}
+              >
+                デッキ一覧を表示する
+              </button>
+            </section>
+          </section>
+        </div>
+      </div>
+
+      {/** ──────────────── */}
+      {/** デッキ一覧画面（全幅表示） ──────────────── */}
+      <section
+        className="decklist-section"
+        style={{
+          display: showDeckList ? 'block' : 'none',
+          gridColumn: '1 / -1',
+          maxWidth: '90%',
+          margin: '0 auto',
+          padding: '2rem 0',
+        }}
+      >
+        <h2 className="section-title" style={{ marginTop: '-2rem' }}>
+          アリーナデッキ
+        </h2>
+        <div
+          style={{
+            display: 'grid',
+            gridAutoFlow: 'column',
+            gridTemplateRows: 'repeat(10, auto)',
+            gap: '0.5rem',
+          }}
+        >
+          {sortedDeck.map((card, i) => {
+            const showCost = card.id !== prevId;
+            prevId = card.id;
+            return (
+              <div
+                key={i}
+                onClick={() => openDeckModal(i)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'stretch',
+                  gap: 0,
+                  marginLeft: showCost ? 0 : 40,
+                  backgroundColor: 'white',
+                  borderRadius: 5,
+                }}
+              >
+                {showCost && (
+                  <div
+                    style={{
+                      backgroundColor: '#4caf50',
+                      color: 'white',
+                      padding: '0 15px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderTopLeftRadius: 4,
+                      borderBottomLeftRadius: 4,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {card.cost}
+                  </div>
+                )}
+                <div
+                  style={{
+                    position: 'relative',
+                    border: '1px solid #999',
+                    borderRadius: showCost ? '0 4px 4px 0' : '4px',
+                    padding: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    flexGrow: 1,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 'bold',
+                      color: 'black',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {card.name}
+                  </span>
+                  <img
+                    src={`/images/${card.id}.png`}
+                    alt={card.name}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: 0,
+                      transform: 'translateY(-30%)',
+                      height: 100,
+                      width: 'auto',
+                      objectFit: 'contain',
+                      clipPath: 'inset(12.5% 10% 55% 10%)',
+                      opacity: 0.2,
+                      zIndex: 0,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/** モーダル群（共通） */}
       {previewOpen && (
         <CardModal
           cards={[...currentPick, ...(normalEnergyCard ? [normalEnergyCard] : [])]}
