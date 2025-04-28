@@ -81,13 +81,19 @@ html, body, #__next {
   padding: 0;
 }
 .main-board {
+  width: 100%;                             /* 横幅いっぱい */
+  aspect-ratio: 16 / 9;                    /* 画像の縦横比に合わせる */
   background: url('/images/bg-pattern.png') top center no-repeat;
-  background-position: top center; /* 上寄せ */
+  margin: 0 auto;
   background-size: 100% auto;      /* 横幅100%、高さは自動 */
-  min-height: 100%;               /* 少なくとも画面全体の高さを確保 */
-  background-size: cover; /* 縦横比を保ったまま要素内に収まる */
+  position: relative;
+  background-size: contain; /* 縦横比を保ったまま要素内に収まる */
   background-color: #553a21; /* 余白部分の背景色 */
   font-family: 'ChalkFont', sans-serif;
+  display: grid;
+  grid-template-columns: 5fr 3fr;          /* お好みのカラム比率 */
+  gap: 1rem;
+  padding: 2rem;
   color:white;
 }
 
@@ -103,3 +109,46 @@ html, body, #__next {
   padding: 14px;       /* 枠と中身の余白を作る */
   position: relative; /* 中のテキストやボタンを上に重ねるため */ }
 
+.layout {
+  display: grid;
+  /* 左：伸びる、右：固定幅（必要に応じて調整） */
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  max-width: 100%;  /* ページ中央に寄せる最大幅 */
+  margin: 0 ;     /* 横中央寄せ */
+  padding: 1rem;      /* お好みで余白 */
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-panel {
+  /* カードピックとグラフを上下に並べる例 */
+  display: flex;
+  flex-direction: column;
+  /* max-width を入れて要素が広がりすぎないように */
+  max-width: 100%;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 上に履歴、下にボタンを配置 */
+  height: calc(100vh - /* ヘッダー等の余白を引く */ 0px);
+  padding: 1rem;
+}
+
+.section-title { font-size: 2rem; margin:0; }
+.draft-candidates { display: flex; gap: 1rem; flex-wrap: wrap; }
+.charts { display: flex; gap: 1rem; align-items: flex-start; }
+.history-list { list-style: none; padding: 0; margin: 0; }
+.deck-grid {
+  display: grid;
+  grid-template-rows: repeat(10, auto);
+  grid-auto-flow: column;
+  gap: 12px;
+}
