@@ -269,8 +269,7 @@ async function downloadDeckImage() {
         backgroundSize: 'cover',
       }}
     >
-      {/** ──────────────── */}
-      {/** ドラフト画面 ──────────────── */}
+      {/* ドラフト画面 */}
       <div
         className="draft-ui"
         style={{
@@ -279,24 +278,20 @@ async function downloadDeckImage() {
           gridColumn: '1 / -1',
         }}
       >
-        {/* 左カラム：カード選択＋グラフ */}
-        <div className="left-panel" style={{ flex: 5,marginTop:'1rem' }}>
-          {/* カード選択セクション */}
+        {/* 左カラム */}
+        <div className="left-panel" style={{ flex: 5, marginTop: '1rem' }}>
           <section className="draft-section">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-    <Link href="/" passHref>
-    <button
-      className="btn"
-      data-ignore-export
-      style={{
-        marginLeft: '2rem',
-        fontSize: '100%',
-      }}
-    >
-      トップへ戻る
-    </button>
-  </Link>
-              <h2 className="section-title" style={{ marginLeft: '0.5rem',whiteSpace: 'nowrap' }}>
+              <Link href="/" passHref>
+                <button
+                  className="btn"
+                  data-ignore-export
+                  style={{ marginLeft: '2rem', fontSize: '100%' }}
+                >
+                  トップへ戻る
+                </button>
+              </Link>
+              <h2 className="section-title" style={{ marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
                 カード選択
               </h2>
               {normalEnergyCard && (
@@ -317,12 +312,7 @@ async function downloadDeckImage() {
             <div className="draft-controls" style={{ display: 'flex', alignItems: 'center' }}>
               <div
                 className="draft-candidates"
-                style={{
-                  display: 'flex',
-                  gap: '1rem',
-                  flexWrap: 'wrap',
-                  marginLeft: '2rem',
-                }}
+                style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginLeft: '2rem' }}
               >
                 {currentPick.map((card, idx) => (
                   <div
@@ -373,23 +363,12 @@ async function downloadDeckImage() {
               </div>
             </div>
           </section>
-
-          {/* 統計グラフセクション */}
+  
+          {/* グラフ */}
           <section className="stats-section">
-            <div
-              className="charts"
-              style={{ display: 'flex', alignItems: 'center', marginLeft: '2rem' }}
-            >
+            <div className="charts" style={{ display: 'flex', alignItems: 'center', marginLeft: '2rem' }}>
               <PieChart width={200} height={200}>
-                <Pie
-                  data={typeData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  labelLine={false}
-                >
+                <Pie data={typeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} labelLine={false}>
                   {typeData.map((d, i) => (
                     <Cell key={i} fill={d.fill} />
                   ))}
@@ -406,10 +385,7 @@ async function downloadDeckImage() {
                 <BarChart data={manaData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <XAxis dataKey="cost" stroke="#fff" tick={{ fontFamily: 'ChalkFont', fill: '#fff' }} />
                   <YAxis stroke="#fff" tick={{ fontFamily: 'ChalkFont', fill: '#fff' }} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#333', borderRadius: 4 }}
-                    itemStyle={{ fontFamily: 'ChalkFont', color: '#fff' }}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: '#333', borderRadius: 4 }} itemStyle={{ fontFamily: 'ChalkFont', color: '#fff' }} />
                   <Bar dataKey="count" fill="#82ca9d" />
                 </BarChart>
               </ResponsiveContainer>
@@ -418,37 +394,40 @@ async function downloadDeckImage() {
         </div>
 
         {/* 右カラム：ピック履歴 + 切り替えボタン */}
-        <div className="right-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%',flex: 3 }}>
+        <div
+          className="right-panel"
+          style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 3 }}
+        >
           <section
             className="history-section"
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-                <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 1rem',
-      }}
-    >
-            <h2 className="section-title">
-              ピック履歴
-              </h2>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 1rem',
+              }}
+            >
+              <h2 className="section-title">ピック履歴</h2>
               <button
-  className="btn btn-reset"
-  onClick={() => { 
-    if (confirm('本当にドラフトをリセットしますか？')) {
-      setDeck([]);
-      setCurrentPick([]);
-      localStorage.removeItem('draft_deck');
-      generatePick();
-    }
-  }}
->
-  ドラフトをリセット
-</button>
-    </div>
+                className="btn btn-reset"
+                onClick={() => {
+                  if (confirm('本当にドラフトをリセットしますか？')) {
+                    setDeck([]);
+                    setCurrentPick([]);
+                    localStorage.removeItem('draft_deck');
+                    generatePick();
+                  }
+                }}
+              >
+                ドラフトをリセット
+              </button>
+            </div>
+
             <p>デッキ枚数: {deck.length} / {totalPicks}</p>
+
             <div
               style={{
                 flex: '1 1 auto',
@@ -477,9 +456,15 @@ async function downloadDeckImage() {
                 ))}
               </ul>
             </div>
+
             <section
               className="toggle-decklist-section"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 0' }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem 0',
+              }}
             >
               <button
                 className="btn"
@@ -488,7 +473,7 @@ async function downloadDeckImage() {
                 style={{
                   opacity: hasPickedAll ? 1 : 0.5,
                   cursor: hasPickedAll ? 'pointer' : 'not-allowed',
-                  marginTop:'1rem'
+                  marginTop: '1rem',
                 }}
               >
                 デッキ一覧を表示する
@@ -501,157 +486,169 @@ async function downloadDeckImage() {
       {/** ──────────────── */}
       {/** デッキ一覧画面（全幅表示） ──────────────── */}
       <section
-      ref={deckRef}
-        className="decklist-section"
-        style={{
-          display: showDeckList ? 'block' : 'none',
-          gridColumn: '1 / -1',
-          maxWidth: '100%',
-          margin: '0 auto',
-          padding: '2rem 0',
-        }}
-      >
-        <h2 className="section-title" style={{marginTop:'-1rem',marginBottom:'2rem',paddingBottom:'0',lineHeight:1.2,}}>
-          アリーナデッキ
-          <button
-        ref={exportClipboardBtnRef}
-        data-ignore-export
-        className="btn"
-        style={{fontSize:'60%',marginLeft:'2rem'}}
-        onClick={copyDeckImageToClipboard}
-      >
-        コピー
-      </button>
-          <button
-        ref={exportDownloadBtnRef}
-        data-ignore-export
-        className="btn"
-        style={{fontSize:'60%',marginLeft:'0.5rem' }}
-        onClick={downloadDeckImage}
-      >
-        ダウンロード
-      </button>
-      <button className="btn" onClick={onSaveDeck} style={{fontSize:'60%',marginLeft:'0.5rem' }}>
-  保存
-</button>
+  ref={deckRef}
+  className="decklist-section"
+  style={{
+    display: showDeckList ? 'block' : 'none',
+    gridColumn: '1 / -1',
+    maxWidth: '100%',
+    margin: '0 auto',
+    padding: '2rem 0',
+  }}
+>
+  <h2
+    className="section-title"
+    style={{
+      marginTop: '-1rem',
+      marginBottom: '2rem',
+      paddingBottom: '0',
+      lineHeight: 1.2,
+    }}
+  >
+    アリーナデッキ
+    <button
+      ref={exportClipboardBtnRef}
+      data-ignore-export
+      className="btn"
+      style={{ fontSize: '60%', marginLeft: '2rem' }}
+      onClick={copyDeckImageToClipboard}
+    >
+      コピー
+    </button>
+    <button
+      ref={exportDownloadBtnRef}
+      data-ignore-export
+      className="btn"
+      style={{ fontSize: '60%', marginLeft: '0.5rem' }}
+      onClick={downloadDeckImage}
+    >
+      ダウンロード
+    </button>
+    <button
+      className="btn"
+      data-ignore-export
+      onClick={onSaveDeck}
+      style={{ fontSize: '60%', marginLeft: '0.5rem' }}
+    >
+      保存
+    </button>
     <button
       ref={backBtnRef}
       data-ignore-export
       className="btn"
-      style={{fontSize:'60%',marginLeft:'2rem' }}
+      style={{ fontSize: '60%', marginLeft: '2rem' }}
       onClick={() => setIsReadyForDeckList(false)}
     >
       ドラフト画面へ戻る
     </button>
     <Link href="/" passHref>
-    <button
-      className="btn"
-      data-ignore-export
-      style={{
-        marginLeft: '0.5rem',
-        fontSize: '60%',
-      }}
-    >
-      トップへ戻る
-    </button>
-  </Link>
-        </h2>
+      <button
+        className="btn"
+        data-ignore-export
+        style={{ marginLeft: '0.5rem', fontSize: '60%' }}
+      >
+        トップへ戻る
+      </button>
+    </Link>
+  </h2>
+
+  <div
+    style={{
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridTemplateRows: 'repeat(10, auto)',
+      gap: '0.5rem',
+    }}
+  >
+    {sortedDeck.map((card, i) => {
+      const showCost = card.id !== prevId;
+      prevId = card.id;
+      return (
         <div
+          key={i}
+          onClick={() => openDeckModal(i)}
           style={{
-            display: 'grid',
-            gridAutoFlow: 'column',
-            gridTemplateRows: 'repeat(10, auto)',
-            gap: '0.5rem',
+            display: 'flex',
+            alignItems: 'stretch',
+            gap: 0,
+            marginLeft: showCost ? 0 : 40,
+            backgroundColor: 'white',
+            borderRadius: 5,
           }}
         >
-          {sortedDeck.map((card, i) => {
-            const showCost = card.id !== prevId;
-            prevId = card.id;
-            return (
-              <div
-                key={i}
-                onClick={() => openDeckModal(i)}
+          {showCost && (
+            <div
+              style={{
+                backgroundColor: '#4caf50',
+                color: 'white',
+                padding: '0 15px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderTopLeftRadius: 4,
+                borderBottomLeftRadius: 4,
+                cursor: 'pointer',
+              }}
+            >
+              {card.cost}
+            </div>
+          )}
+
+          <div
+            style={{
+              position: 'relative',
+              border: '1px solid #999',
+              borderRadius: showCost ? '0 4px 4px 0' : '4px',
+              padding: 8,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              flexGrow: 1,
+              cursor: 'pointer',
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: '150px',
+                fontWeight: 'bold',
+                color: 'black',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {card.name}
+            </span>
+            <div
+              style={{
+                position: 'absolute',
+                width: '70px',
+                height: '30px',
+                overflow: 'hidden',
+                marginLeft: '90px',
+              }}
+            >
+              <img
+                src={`/images/${card.id}.png`}
+                alt={card.name}
                 style={{
-                  display: 'flex',
-                  alignItems: 'stretch',
-                  gap: 0,
-                  marginLeft: showCost ? 0 : 40,
-                  backgroundColor: 'white',
-                  borderRadius: 5,
-                }}
-              >
-                {showCost && (
-                  <div
-                    style={{
-                      backgroundColor: '#4caf50',
-                      color: 'white',
-                      padding: '0 15px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderTopLeftRadius: 4,
-                      borderBottomLeftRadius: 4,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {card.cost}
-                  </div>
-                )}
-                <div
-                  style={{
-                    position: 'relative',
-                    border: '1px solid #999',
-                    borderRadius: showCost ? '0 4px 4px 0' : '4px',
-                    padding: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    flexGrow: 1,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span
-                    style={{
-                      display: 'inline-block',    // 幅を固定させるためにインライン要素をブロック化
-                      width: '150px',             // お好みの固定幅に調整
-                      fontWeight: 'bold',
-                      color: 'black',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {card.name}
-                  </span>
-                  <div
-                  style={{
                   position: 'absolute',
-                  width: '70px',
-                  height: '30px',      // 切り取りたい高さ
-                  overflow: 'hidden',  // ← ここで親がはみ出し部分をマスク
-                  marginLeft:'90px'
-                  }}
-                  >
-                  <img
-                    src={`/images/${card.id}.png`}
-                    alt={card.name}
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      right: 0,
-                      height: 100,
-                      width: 'auto',
-                      opacity: 0.2,
-                      zIndex: 0,
-                      transform: 'translateY(-30%)',
-                      objectFit: 'contain',
-                    }}
-                  />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                  top: '50%',
+                  right: 0,
+                  height: 100,
+                  width: 'auto',
+                  opacity: 0.2,
+                  zIndex: 0,
+                  transform: 'translateY(-30%)',
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+          </div>
         </div>
-      </section>
+      );
+    })}
+  </div>
+</section>
 
       {/** モーダル群（共通） */}
       {previewOpen && (
