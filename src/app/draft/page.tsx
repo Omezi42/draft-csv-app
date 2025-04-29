@@ -440,6 +440,7 @@ async function downloadDeckImage() {
                 style={{
                   opacity: hasPickedAll ? 1 : 0.5,
                   cursor: hasPickedAll ? 'pointer' : 'not-allowed',
+                  marginTop:'1rem'
                 }}
               >
                 デッキ一覧を表示する
