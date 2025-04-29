@@ -47,6 +47,7 @@ export default function DraftPage() {
   const [historyModalIndex, setHistoryModalIndex] = useState(0);
   const [deckModalOpen, setDeckModalOpen] = useState(false);
   const [deckModalIndex, setDeckModalIndex] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (typeof load === 'string') {
@@ -253,7 +254,15 @@ async function downloadDeckImage() {
   );
   alert(`「${name}」として保存しました！`);
 };
-
+const handleReset = () => {
+    if (confirm('本当にドラフトをリセットしますか？')) {
+      setDeck([]);
+      setCurrentPick([]);
+      localStorage.removeItem('draft_deck');
+      generatePick();
+      setIsReadyForDeckList(false);
+    }
+  };
 
   const hasPickedAll = deck.length >= totalPicks;
   const showDeckList = hasPickedAll && isReadyForDeckList;
@@ -268,8 +277,63 @@ async function downloadDeckImage() {
         padding: '2rem',
         backgroundImage: 'url(/images/bg-pattern.png)',
         backgroundSize: 'cover',
+        position:'relative'
       }}
     >
+              {/* ハンバーガーメニューアイコン */}
+      <button
+        className="menu-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        data-ignore-export
+        style={{
+          position: 'absolute', top: '7%', right: '5%',
+          width: 40, height: 40, borderRadius: 8,
+          background: 'rgba(255,255,255,1)', border: 'none', padding: 4,
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
+          cursor: 'pointer', zIndex: 1000,
+        }}
+      >
+        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
+        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
+        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
+      </button>
+
+      {/* メニュー内容 */}
+      {menuOpen && (
+        <div
+          className="menu-dropdown"
+          data-ignore-export
+          style={{
+            position: 'absolute', top: '13%', right: '5%',
+            background: '#fff', border: '1px solid #ccc', borderRadius: 8,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)', padding: 8,
+            zIndex: 1000,
+            maxWidth:'17rem'
+          }}
+        >
+          {!showDeckList ? (
+            // ドラフト画面用メニュー
+            <>
+              <button className="btn btn-reset" onClick={handleReset} style={{ marginBottom:8, width:'100%' }}>ドラフトリセット</button>
+              <Link href="/">
+                <button className="btn" style={{ marginBottom:8,width:'100%' }}>トップへ戻る</button>
+              </Link>
+              <button className="btn" disabled={!hasPickedAll} onClick={() => setIsReadyForDeckList(true)}style={{opacity: hasPickedAll ? 1 : 0.5,cursor: hasPickedAll ? 'pointer' : 'not-allowed',width:'100%',}}>デッキ一覧を表示する</button>
+            </>
+          ) : (
+            // デッキ一覧画面用メニュー
+            <>
+              <button onClick={copyDeckImageToClipboard} className="btn" style={{ marginBottom:8, width:'100%' }}>画像コピー</button>
+              <button onClick={downloadDeckImage} className="btn" style={{ marginBottom:8, width:'100%' }}>画像ダウンロード</button>
+              <button onClick={onSaveDeck} className="btn" style={{ marginBottom:8, width:'100%' }}>デッキ保存</button>
+              <button onClick={() => setIsReadyForDeckList(false)} className="btn" style={{ marginBottom:8, width:'100%' }}>ドラフトに戻る</button>
+              <Link href="/">
+                <button className="btn" style={{ width:'100%' }}>トップへ戻る</button>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
       {/* ドラフト画面 */}
       <div
         className="draft-ui"
@@ -283,16 +347,7 @@ async function downloadDeckImage() {
         <div className="left-panel" style={{ flex: 5, marginTop: '1rem' }}>
           <section className="draft-section">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Link href="/" passHref>
-                <button
-                  className="btn"
-                  data-ignore-export
-                  style={{ marginLeft: '2rem', fontSize: '100%' }}
-                >
-                  トップへ戻る
-                </button>
-              </Link>
-              <h2 className="section-title" style={{ marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
+              <h2 className="section-title" style={{ marginLeft: '5%', whiteSpace: 'nowrap' }}>
                 カード選択
               </h2>
               {normalEnergyCard && (
@@ -303,7 +358,7 @@ async function downloadDeckImage() {
                   style={{
                     opacity: hasPickedAll ? 0.5 : 1,
                     cursor: hasPickedAll ? 'not-allowed' : 'pointer',
-                    marginLeft: '5rem',
+                    marginLeft: '30%',
                   }}
                 >
                   ノーマルエネルギーを選択
@@ -412,19 +467,6 @@ async function downloadDeckImage() {
               }}
             >
               <h2 className="section-title">ピック履歴</h2>
-              <button
-                className="btn btn-reset"
-                onClick={() => {
-                  if (confirm('本当にドラフトをリセットしますか？')) {
-                    setDeck([]);
-                    setCurrentPick([]);
-                    localStorage.removeItem('draft_deck');
-                    generatePick();
-                  }
-                }}
-              >
-                ドラフトをリセット
-              </button>
             </div>
 
             <p>デッキ枚数: {deck.length} / {totalPicks}</p>
@@ -507,50 +549,6 @@ async function downloadDeckImage() {
     }}
   >
     アリーナデッキ
-    <button
-      ref={exportClipboardBtnRef}
-      data-ignore-export
-      className="btn"
-      style={{ fontSize: '60%', marginLeft: '2rem' }}
-      onClick={copyDeckImageToClipboard}
-    >
-      コピー
-    </button>
-    <button
-      ref={exportDownloadBtnRef}
-      data-ignore-export
-      className="btn"
-      style={{ fontSize: '60%', marginLeft: '0.5rem' }}
-      onClick={downloadDeckImage}
-    >
-      ダウンロード
-    </button>
-    <button
-      className="btn"
-      data-ignore-export
-      onClick={onSaveDeck}
-      style={{ fontSize: '60%', marginLeft: '0.5rem' }}
-    >
-      保存
-    </button>
-    <button
-      ref={backBtnRef}
-      data-ignore-export
-      className="btn"
-      style={{ fontSize: '60%', marginLeft: '2rem' }}
-      onClick={() => setIsReadyForDeckList(false)}
-    >
-      ドラフト画面へ戻る
-    </button>
-    <Link href="/" passHref>
-      <button
-        className="btn"
-        data-ignore-export
-        style={{ marginLeft: '0.5rem', fontSize: '60%' }}
-      >
-        トップへ戻る
-      </button>
-    </Link>
   </h2>
 
   <div

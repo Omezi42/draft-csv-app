@@ -80,7 +80,7 @@ export default function HomePage() {
       </section>
 
       {/* 保存済みデッキ一覧 */}
-      <section style={{ color: '#fff', textAlign: 'left', maxWidth: '1000px', marginLeft: '3rem', marginRight: 'auto',marginTop:'-10rem' }}>
+      <section style={{ color: '#fff', textAlign: 'left', maxWidth: '100%', marginLeft: '3rem', marginRight: 'auto',marginTop:'-10rem' }}>
         <h2 style={{ fontFamily: 'ChalkFont', fontSize: '2rem' }}>保存済みデッキ一覧</h2>
         {savedDecks.length === 0 ? (
           <p>まだ保存されたデッキがありません。</p>
