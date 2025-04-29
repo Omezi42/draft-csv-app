@@ -244,7 +244,7 @@ async function downloadDeckImage() {
         }}
       >
         {/* 左カラム：カード選択＋グラフ */}
-        <div className="left-panel" style={{ flex: 5 }}>
+        <div className="left-panel" style={{ flex: 5,marginTop:'1rem' }}>
           {/* カード選択セクション */}
           <section className="draft-section">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
