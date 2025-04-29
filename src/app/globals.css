@@ -65,6 +65,19 @@ body {
   color: #999;
   border-color: #999;
 }
+/* styles/globals.css などに追記 */
+.btn-reset {
+  /* 枠線と文字を赤基調に */
+  border-color: #e53e3e;
+  color: #e53e3e;
+  background: white;
+}
+/* ホバー時の背景色・文字色 */
+.btn-reset:hover {
+  background: #e53e3e;
+  color: white;
+}
+
 
 /* 1) チョーク風フォントを読み込む */
 @font-face {

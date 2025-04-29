@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { CardModal } from '../components/CardModal';
 import { Card } from '../types';
 import Papa from 'papaparse';
+import html2canvas from 'html2canvas';
 import {
   PieChart,
   Pie,
@@ -26,7 +27,11 @@ export default function DraftPage() {
   const [pickCandidates, setPickCandidates] = useState<Card[]>([]);
   const [normalEnergyCard, setNormalEnergyCard] = useState<Card | null>(null);
   const [currentPick, setCurrentPick] = useState<Card[]>([]);
-  const [deck, setDeck] = useState<Card[]>([]);
+  const [deck, setDeck] = useState<Card[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const saved = localStorage.getItem('draft_deck');
+    return saved ? JSON.parse(saved) : [];
+    });
   const [isReadyForDeckList, setIsReadyForDeckList] = useState(false);
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -35,6 +40,11 @@ export default function DraftPage() {
   const [historyModalIndex, setHistoryModalIndex] = useState(0);
   const [deckModalOpen, setDeckModalOpen] = useState(false);
   const [deckModalIndex, setDeckModalIndex] = useState(0);
+
+// deck が更新されるたびに localStorage に保存
+  useEffect(() => {
+  localStorage.setItem('draft_deck', JSON.stringify(deck));
+  }, [deck]);
 
   // CSV 読み込み
   useEffect(() => {
@@ -172,6 +182,41 @@ export default function DraftPage() {
       }),
     [deck],
   );
+  const deckRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
+  const exportClipboardBtnRef = useRef<HTMLButtonElement>(null);
+  const exportDownloadBtnRef = useRef<HTMLButtonElement>(null);
+  const backBtnRef = useRef<HTMLButtonElement>(null);
+
+// 共有で使うキャプチャ本体
+async function captureDeckCanvas(): Promise<Blob> {
+  if (!mainRef.current) throw new Error('mainRef がありません');
+  const canvas = await html2canvas(mainRef.current, {
+    backgroundColor: null,
+    useCORS: true,
+    scale: 1,
+    ignoreElements: el => el.hasAttribute('data-ignore-export'),
+  });
+  return new Promise(resolve => canvas.toBlob(blob => resolve(blob!)));
+}
+
+// クリップボードにコピー
+async function copyDeckImageToClipboard() {
+  const blob = await captureDeckCanvas();
+  await navigator.clipboard.write([ new ClipboardItem({ [blob.type]: blob }) ]);
+}
+
+// ダウンロード
+async function downloadDeckImage() {
+  const blob = await captureDeckCanvas();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ArenaDeck.png';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
   const hasPickedAll = deck.length >= totalPicks;
   const showDeckList = hasPickedAll && isReadyForDeckList;
@@ -179,6 +224,7 @@ export default function DraftPage() {
   return (
     <main
       className="main-board"
+      ref={mainRef}
       style={{
         display: 'grid',
         gridTemplateColumns: '5fr 3fr',
@@ -329,7 +375,31 @@ export default function DraftPage() {
             className="history-section"
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-            <h2 className="section-title">ピック履歴</h2>
+                <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 1rem',
+      }}
+    >
+            <h2 className="section-title">
+              ピック履歴
+              </h2>
+              <button
+  className="btn btn-reset"
+  onClick={() => { 
+    if (confirm('本当にドラフトをリセットしますか？')) {
+      setDeck([]);
+      setCurrentPick([]);
+      localStorage.removeItem('draft_deck');
+      generatePick();
+    }
+  }}
+>
+  ドラフトをリセット
+</button>
+    </div>
             <p>デッキ枚数: {deck.length} / {totalPicks}</p>
             <div
               style={{
@@ -382,6 +452,7 @@ export default function DraftPage() {
       {/** ──────────────── */}
       {/** デッキ一覧画面（全幅表示） ──────────────── */}
       <section
+      ref={deckRef}
         className="decklist-section"
         style={{
           display: showDeckList ? 'block' : 'none',
@@ -391,11 +462,31 @@ export default function DraftPage() {
           padding: '2rem 0',
         }}
       >
-        <h2 className="section-title" style={{ marginTop: '-2rem' }}>
+        <h2 className="section-title" style={{marginTop:'-1rem',marginBottom:'2rem',paddingBottom:'0',lineHeight:1.2,}}>
           アリーナデッキ
           <button
+        ref={exportClipboardBtnRef}
+        data-ignore-export
+        className="btn"
+        style={{fontSize:'60%',marginLeft:'15%'}}
+        onClick={copyDeckImageToClipboard}
+      >
+        コピー
+      </button>
+          <button
+        ref={exportDownloadBtnRef}
+        data-ignore-export
+        className="btn"
+        style={{fontSize:'60%',marginLeft:'5%' }}
+        onClick={downloadDeckImage}
+      >
+        ダウンロード
+      </button>
+    <button
+      ref={backBtnRef}
+      data-ignore-export
       className="btn"
-      style={{ marginLeft:'60%',fontSize:'60%' }}
+      style={{fontSize:'60%',marginLeft:'20%' }}
       onClick={() => setIsReadyForDeckList(false)}
     >
       戻る
@@ -457,15 +548,24 @@ export default function DraftPage() {
                 >
                   <span
                     style={{
+                      display: 'inline-block',    // 幅を固定させるためにインライン要素をブロック化
+                      width: '150px',             // お好みの固定幅に調整
                       fontWeight: 'bold',
                       color: 'black',
                       whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
                     }}
                   >
                     {card.name}
                   </span>
+                  <div
+                  style={{
+                  position: 'absolute',
+                  width: '70px',
+                  height: '30px',      // 切り取りたい高さ
+                  overflow: 'hidden',  // ← ここで親がはみ出し部分をマスク
+                  marginLeft:'90px'
+                  }}
+                  >
                   <img
                     src={`/images/${card.id}.png`}
                     alt={card.name}
@@ -473,15 +573,15 @@ export default function DraftPage() {
                       position: 'absolute',
                       top: '50%',
                       right: 0,
-                      transform: 'translateY(-30%)',
                       height: 100,
                       width: 'auto',
-                      objectFit: 'contain',
-                      clipPath: 'inset(12.5% 10% 55% 10%)',
                       opacity: 0.2,
                       zIndex: 0,
+                      transform: 'translateY(-30%)',
+                      objectFit: 'contain',
                     }}
                   />
+                  </div>
                 </div>
               </div>
             );

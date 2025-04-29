@@ -13,7 +13,7 @@ export default function HomePage() {
         color: '#fff',
         textShadow: '2px 2px 0 #000',
       }}>
-        あの頃の自作TCG アリーナへようこそ！
+        あの頃の自作TCG<br/>アリーナへようこそ！
       </h1>
       <p style={{
         fontFamily: 'ChalkFont, sans-serif',
@@ -32,9 +32,9 @@ export default function HomePage() {
             ドラフトピックを始める
           </button>
         </Link>
-        <a href="https://unityroom.com/games/あなたのゲームID" target="_blank" rel="noopener">
+        <a href="https://unityroom.com/games/anokorotcg" target="_blank" rel="noopener">
           <button className="btn" style={{ fontSize: '1.25rem' }}>
-            自作TCGを遊ぶ →
+            ゲームを遊ぶ →
           </button>
         </a>
       </div>
