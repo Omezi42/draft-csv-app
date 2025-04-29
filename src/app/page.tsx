@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { SavedDeck } from '/Users/knaze/draft-csv-app/src/app/types';
+import { SavedDeck } from './types';
 
 export default function HomePage() {
   const [savedDecks, setSavedDecks] = useState<SavedDeck[]>([]);

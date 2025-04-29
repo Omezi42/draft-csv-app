@@ -166,12 +166,6 @@ html, body, #__next {
   gap: 12px;
 }
 
-/* 保存済みデッキのタイトルと日付を通常フォントに */
-.saved-deck-title,
-.saved-deck-date {
-  font-family: Arial, Helvetica, sans-serif !important;
-}
-
 /* モーダル内全体を通常フォントに */
 .modal-content {
   font-family: Arial, Helvetica, sans-serif !important;
