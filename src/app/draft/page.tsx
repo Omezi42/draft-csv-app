@@ -1,11 +1,12 @@
 'use client';
-
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { CardModal } from '../components/CardModal';
 import { Card } from '../types';
 import Papa from 'papaparse';
 import html2canvas from 'html2canvas';
+import { SavedDeck } from '../types';
 import {
   PieChart,
   Pie,
@@ -17,6 +18,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import Link from 'next/link';
 
 const totalPicks = 50;
 const TYPE_ORDER = ['モンスター', '魔法', '罠', 'フィールド', 'エネルギー'];
@@ -24,6 +26,11 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c'];
 const COST_CATEGORIES = ['0', '1', '2', '3', '4', '5', '6', '7+'];
 
 export default function DraftPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const load = searchParams.get('load');
+  const page = searchParams.get('page');
+  const goHome = () => router.push('/')
   const [pickCandidates, setPickCandidates] = useState<Card[]>([]);
   const [normalEnergyCard, setNormalEnergyCard] = useState<Card | null>(null);
   const [currentPick, setCurrentPick] = useState<Card[]>([]);
@@ -33,13 +40,24 @@ export default function DraftPage() {
     return saved ? JSON.parse(saved) : [];
     });
   const [isReadyForDeckList, setIsReadyForDeckList] = useState(false);
-
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyModalIndex, setHistoryModalIndex] = useState(0);
   const [deckModalOpen, setDeckModalOpen] = useState(false);
   const [deckModalIndex, setDeckModalIndex] = useState(0);
+
+  useEffect(() => {
+    if (typeof load === 'string') {
+      const list: SavedDeck[] =
+        JSON.parse(localStorage.getItem('saved_decks') || '[]');
+      const found = list.find(d => d.id === load);
+      if (found) {
+        setDeck(found.cards);
+        setIsReadyForDeckList(true);
+      }
+    }
+  }, [load]);
 
 // deck が更新されるたびに localStorage に保存
   useEffect(() => {
@@ -215,7 +233,25 @@ async function downloadDeckImage() {
   a.download = 'ArenaDeck.png';
   a.click();
   URL.revokeObjectURL(url);
-}
+  }
+  const onSaveDeck = () => {
+  const name = window.prompt('このデッキの名前を入力してください');
+  if (!name) return;
+  // 既存保存配列を localStorage から取得
+  const existing: SavedDeck[] =
+    JSON.parse(localStorage.getItem('saved_decks') || '[]');
+  const newDeck: SavedDeck = {
+    id: crypto.randomUUID(),
+    name,
+    cards: deck,
+    savedAt: Date.now(),
+  };
+  localStorage.setItem(
+    'saved_decks',
+    JSON.stringify([ newDeck, ...existing ])
+  );
+  alert(`「${name}」として保存しました！`);
+};
 
 
   const hasPickedAll = deck.length >= totalPicks;
@@ -248,7 +284,19 @@ async function downloadDeckImage() {
           {/* カード選択セクション */}
           <section className="draft-section">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <h2 className="section-title" style={{ marginLeft: '2rem',whiteSpace: 'nowrap' }}>
+    <Link href="/" passHref>
+    <button
+      className="btn"
+      data-ignore-export
+      style={{
+        marginLeft: '2rem',
+        fontSize: '100%',
+      }}
+    >
+      トップへ戻る
+    </button>
+  </Link>
+              <h2 className="section-title" style={{ marginLeft: '0.5rem',whiteSpace: 'nowrap' }}>
                 カード選択
               </h2>
               {normalEnergyCard && (
@@ -259,7 +307,7 @@ async function downloadDeckImage() {
                   style={{
                     opacity: hasPickedAll ? 0.5 : 1,
                     cursor: hasPickedAll ? 'not-allowed' : 'pointer',
-                    marginLeft: '10rem',
+                    marginLeft: '5rem',
                   }}
                 >
                   ノーマルエネルギーを選択
@@ -469,7 +517,7 @@ async function downloadDeckImage() {
         ref={exportClipboardBtnRef}
         data-ignore-export
         className="btn"
-        style={{fontSize:'60%',marginLeft:'15%'}}
+        style={{fontSize:'60%',marginLeft:'2rem'}}
         onClick={copyDeckImageToClipboard}
       >
         コピー
@@ -478,20 +526,35 @@ async function downloadDeckImage() {
         ref={exportDownloadBtnRef}
         data-ignore-export
         className="btn"
-        style={{fontSize:'60%',marginLeft:'5%' }}
+        style={{fontSize:'60%',marginLeft:'0.5rem' }}
         onClick={downloadDeckImage}
       >
         ダウンロード
       </button>
+      <button className="btn" onClick={onSaveDeck} style={{fontSize:'60%',marginLeft:'0.5rem' }}>
+  保存
+</button>
     <button
       ref={backBtnRef}
       data-ignore-export
       className="btn"
-      style={{fontSize:'60%',marginLeft:'20%' }}
+      style={{fontSize:'60%',marginLeft:'2rem' }}
       onClick={() => setIsReadyForDeckList(false)}
     >
-      戻る
+      ドラフト画面へ戻る
     </button>
+    <Link href="/" passHref>
+    <button
+      className="btn"
+      data-ignore-export
+      style={{
+        marginLeft: '0.5rem',
+        fontSize: '60%',
+      }}
+    >
+      トップへ戻る
+    </button>
+  </Link>
         </h2>
         <div
           style={{
