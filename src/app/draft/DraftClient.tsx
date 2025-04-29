@@ -288,7 +288,7 @@ const handleReset = () => {
         style={{
           position: 'absolute', top: '7%', right: '5%',
           width: 40, height: 40, borderRadius: 8,
-          background: 'rgba(255,255,255,1)', border: 'none', padding: 4,
+          background: 'rgba(255,255,255,1)', border: '2px solid #fabc0c', padding: 4,
           display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
           cursor: 'pointer', zIndex: 1000,
         }}
