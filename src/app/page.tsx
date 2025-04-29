@@ -88,10 +88,11 @@ export default function HomePage() {
           <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem',maxHeight: '200px',overflowY: 'auto', paddingRight: '1rem', }}>
             {savedDecks.map(deck => (
               <li key={deck.id} style={{ marginBottom: '1rem', display:'flex',alignItems:'center',background: 'rgba(0,0,0,0.5)', padding: '1rem', borderRadius: '8px' }}>
-                <span style={{ display:'iinline-block',maxWidth:'200px',fontWeight: 'bold', fontSize: '1.1rem', color: '#fff',whiteSpace: 'nowrap',overflow: 'hidden',textOverflow: 'ellipsis', }}>{deck.name}</span>
+                <span style={{ display:'iinline-block',width:'200px',fontWeight: 'bold', fontSize: '1.1rem', color: '#fff',whiteSpace: 'nowrap',overflow: 'hidden',textOverflow: 'ellipsis', }}>{deck.name}</span>
                 <span style={{ margin: '0 1rem', fontSize: '0.9rem', color: '#ddd' }}>
                   ({new Date(deck.savedAt).toLocaleString()})
                 </span>
+                <div style={{marginRight:'auto'}}>
                 <Link href={`/draft?load=${deck.id}`}>  
                   <button className="btn" style={{ marginLeft: '1rem' }}>読み込む</button>
                   </Link>
@@ -102,6 +103,7 @@ export default function HomePage() {
             >
               削除
             </button>
+            </div>
               </li>
             ))}
           </ul>
