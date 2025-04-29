@@ -26,9 +26,9 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c'];
 const COST_CATEGORIES = ['0', '1', '2', '3', '4', '5', '6', '7+'];
 
 export default function DraftPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const load = searchParams.get('load');
+  const router = useRouter();
   const page = searchParams.get('page');
   const goHome = () => router.push('/')
   const [pickCandidates, setPickCandidates] = useState<Card[]>([]);
