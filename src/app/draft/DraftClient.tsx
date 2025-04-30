@@ -475,7 +475,7 @@ const handleReset = () => {
               style={{
                 flex: '1 1 auto',
                 minHeight: '55vh',
-                maxHeight: '70vh',
+                maxHeight: '400px',
                 overflowY: 'auto',
                 border: '1px solid #ccc',
                 borderRadius: 4,
