@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, ReactNode, useRef } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
 
 interface AudioContextProps {
   volume: number;
@@ -15,10 +15,16 @@ export const AudioContext = createContext<AudioContextProps>({
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const [volume, setVolume] = useState(0.5);
-  const clickAudio = useRef<HTMLAudioElement>(new Audio('/se/click.mp3'));
+  const clickAudio = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // クライアントマウント後に Audio を初期化
+    clickAudio.current = new Audio('/se/click.mp3');
+  }, []);
 
   const playClick = () => {
     const audio = clickAudio.current;
+    if (!audio) return;
     audio.currentTime = 0;
     audio.volume = volume;
     audio.play().catch(() => {});
