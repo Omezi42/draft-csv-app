@@ -13,26 +13,58 @@ body {
 /* モーダル用オーバーレイ */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;                /* 余白を入れて上下に隙間を確保 */
+  padding: 1rem;
   box-sizing: border-box;
-  overflow: auto;               /* モーダルが大きいときスクロールする */
+  overflow: auto;
 }
+
 .modal-content {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  max-width: 35%;              /* 横幅は画面の 90% まで */
-  max-height: 90%;             /* 高さは画面の 90% まで */
-  overflow-y: auto;             /* 縦にあふれたらスクロール */
+  position: relative;
+  background: url('/images/bookModal.png') no-repeat center/cover;
   display: flex;
-  flex-direction: column;
-  align-items: center;          /* 子要素を水平方向中央揃え */
+  width: 70vw;
+  height: 80vh;
+}
+.modal-page {
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+.card-name {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.card-stats {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+.card-text {
+  line-height: 1.4;
+}
+.btn-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid var(--primary-green);
+  font-size: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+.btn-prev {
+  left: -1.75rem;
+}
+.btn-next {
+  right: -1rem;
 }
 
 /* あの頃ボタン風 */
@@ -57,6 +89,14 @@ body {
 }
 .btn-prev:hover {
   background: var(--secondary-green);
+}
+
+.btn-next {
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+.btn-next:hover {
+  background: var(--primary-green);
 }
 .btn:disabled {
   cursor: not-allowed;
@@ -164,9 +204,4 @@ html, body, #__next {
   grid-template-rows: repeat(10, auto);
   grid-auto-flow: column;
   gap: 12px;
-}
-
-/* モーダル内全体を通常フォントに */
-.modal-content {
-  font-family: Arial, Helvetica, sans-serif !important;
 }

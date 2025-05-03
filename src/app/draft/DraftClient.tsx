@@ -2,12 +2,13 @@
 export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useMemo, useRef } from 'react';
-import Image from 'next/image';
 import { CardModal } from '../components/CardModal';
 import { Card } from '../types';
 import Papa from 'papaparse';
 import html2canvas from 'html2canvas';
 import { SavedDeck } from '../types';
+import { Menu } from '../components/Menu';
+import { useAudio } from '../context/AudioContext';
 import {
   PieChart,
   Pie,
@@ -30,8 +31,13 @@ export default function DraftPage() {
   const searchParams = useSearchParams();
   const load = searchParams.get('load');
   const router = useRouter();
-  const page = searchParams.get('page');
-  const goHome = () => router.push('/')
+  const { volume, playClick } = useAudio();
+  const bgmRef = useRef<HTMLAudioElement>(null);
+
+  const seClickRef = useRef<HTMLAudioElement>(null);
+  const sePickRef = useRef<HTMLAudioElement>(null);
+  const seModalRef = useRef<HTMLAudioElement | null>(null);
+
   const [pickCandidates, setPickCandidates] = useState<Card[]>([]);
   const [normalEnergyCard, setNormalEnergyCard] = useState<Card | null>(null);
   const [currentPick, setCurrentPick] = useState<Card[]>([]);
@@ -48,6 +54,7 @@ export default function DraftPage() {
   const [deckModalOpen, setDeckModalOpen] = useState(false);
   const [deckModalIndex, setDeckModalIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [seVolume,  setSeVolume]  = useState(0.5);
 
   useEffect(() => {
     if (typeof load === 'string') {
@@ -81,6 +88,14 @@ export default function DraftPage() {
       });
   }, []);
 
+  useEffect(() => {
+    const audio = bgmRef.current;
+    if (!audio) return;
+    audio.loop = true;
+    audio.volume = volume;
+    audio.play().catch(() => {});
+  }, [volume]);
+
   // ピック生成
   const generatePick = () => {
     if (!pickCandidates.length) return;
@@ -100,12 +115,38 @@ export default function DraftPage() {
     if (pickCandidates.length) generatePick();
   }, [pickCandidates]);
 
-  // カード／エネルギー選択
-  const handleCardPick = (card: Card) => setDeck(d => [...d, card]);
-  const handleEnergyPick = () => {
-    if (normalEnergyCard) setDeck(d => [...d, normalEnergyCard]);
-  };
+  useEffect(() => {
+    sePickRef.current = new Audio('/se/pick.mp3');
+  }, []);  
+  useEffect(() => {
+    seModalRef.current = new Audio('/se/modal.mp3');
+  }, []);
+  useEffect(() => {
+    seClickRef.current = new Audio('/se/click.mp3');
+  }, []);
 
+  const handleCardPick = (card: Card) => {
+    const audio = sePickRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setDeck(d => [...d, card]);
+  };
+  
+  const handleEnergyPick = () => {
+    const audio = sePickRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    if (normalEnergyCard) {
+      setDeck(d => [...d, normalEnergyCard]);
+    }
+  };
+  
   // deck が増えたら次ピック
   useEffect(() => {
     if (deck.length < totalPicks) generatePick();
@@ -117,30 +158,66 @@ export default function DraftPage() {
     setPreviewOpen(true);
   };
   const closePreview = () => setPreviewOpen(false);
-  const prevPreview = () =>
-    setPreviewIndex(i => (i - 1 + currentPick.length) % currentPick.length);
-  const nextPreview = () =>
-    setPreviewIndex(i => (i + 1) % currentPick.length);
+  const prevPreview = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setPreviewIndex(i => (i - 1 + currentPick.length) % currentPick.length)};
+  const nextPreview = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setPreviewIndex(i => (i + 1) % currentPick.length)};
 
   const openHistoryModal = (i: number) => {
     setHistoryModalIndex(i);
     setHistoryModalOpen(true);
   };
   const closeHistoryModal = () => setHistoryModalOpen(false);
-  const prevHistory = () =>
-    setHistoryModalIndex(i => (i - 1 + deck.length) % deck.length);
-  const nextHistory = () =>
-    setHistoryModalIndex(i => (i + 1) % deck.length);
+  const prevHistory = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setHistoryModalIndex(i => (i - 1 + deck.length) % deck.length)};
+  const nextHistory = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setHistoryModalIndex(i => (i + 1) % deck.length)};
 
   const openDeckModal = (i: number) => {
     setDeckModalIndex(i);
     setDeckModalOpen(true);
   };
   const closeDeckModal = () => setDeckModalOpen(false);
-  const prevDeck = () =>
-    setDeckModalIndex(i => (i - 1 + deck.length) % deck.length);
-  const nextDeck = () =>
-    setDeckModalIndex(i => (i + 1) % deck.length);
+  const prevDeck = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setDeckModalIndex(i => (i - 1 + deck.length) % deck.length)};
+  const nextDeck = () =>{
+    const audio = seModalRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.volume = volume;
+      audio.play();
+    }
+    setDeckModalIndex(i => (i + 1) % deck.length)};
 
   // グラフ用データ
   const typeData = useMemo(() => {
@@ -268,6 +345,7 @@ const handleReset = () => {
   const showDeckList = hasPickedAll && isReadyForDeckList;
 
   return (
+    <>
     <main
       className="main-board"
       ref={mainRef}
@@ -280,60 +358,38 @@ const handleReset = () => {
         position:'relative'
       }}
     >
-              {/* ハンバーガーメニューアイコン */}
-      <button
-        className="menu-toggle"
-        onClick={() => setMenuOpen(!menuOpen)}
-        data-ignore-export
-        style={{
-          position: 'absolute', top: '7%', right: '5%',
-          width: 40, height: 40, borderRadius: 8,
-          background: 'rgba(255,255,255,1)', border: '2px solid #fabc0c', padding: 4,
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
-          cursor: 'pointer', zIndex: 1000,
-        }}
-      >
-        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
-        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
-        <span style={{ display:'block', height:2, background:'#fabc0c', borderRadius:1 }} />
-      </button>
-
-      {/* メニュー内容 */}
-      {menuOpen && (
-        <div
-          className="menu-dropdown"
-          data-ignore-export
-          style={{
-            position: 'absolute', top: '13%', right: '5%',
-            background: '#fff', border: '1px solid #ccc', borderRadius: 8,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)', padding: 8,
-            zIndex: 1000,
-            maxWidth:'17rem'
-          }}
-        >
-          {!showDeckList ? (
-            // ドラフト画面用メニュー
-            <>
-              <button className="btn btn-reset" onClick={handleReset} style={{ marginBottom:8, width:'100%' }}>ドラフトリセット</button>
-              <Link href="/">
-                <button className="btn" style={{ marginBottom:8,width:'100%' }}>トップへ戻る</button>
-              </Link>
-              <button className="btn" disabled={!hasPickedAll} onClick={() => setIsReadyForDeckList(true)}style={{opacity: hasPickedAll ? 1 : 0.5,cursor: hasPickedAll ? 'pointer' : 'not-allowed',width:'100%',}}>デッキ一覧を表示する</button>
-            </>
-          ) : (
-            // デッキ一覧画面用メニュー
-            <>
-              <button onClick={copyDeckImageToClipboard} className="btn" style={{ marginBottom:8, width:'100%' }}>画像コピー</button>
-              <button onClick={downloadDeckImage} className="btn" style={{ marginBottom:8, width:'100%' }}>画像ダウンロード</button>
-              <button onClick={onSaveDeck} className="btn" style={{ marginBottom:8, width:'100%' }}>デッキ保存</button>
-              <button onClick={() => setIsReadyForDeckList(false)} className="btn" style={{ marginBottom:8, width:'100%' }}>ドラフトに戻る</button>
-              <Link href="/">
-                <button className="btn" style={{ width:'100%' }}>トップへ戻る</button>
-              </Link>
-            </>
-          )}
-        </div>
-      )}
+        <Menu
+          menuOpen={menuOpen}
+          menuMode={showDeckList ? 'deck' : 'draft'}
+          onToggle={() => { playClick(); setMenuOpen(o => !o); }}
+          showDeckList={showDeckList}
+          hasPickedAll={hasPickedAll}
+          handleReset={handleReset}
+          setIsReadyForDeckList={setIsReadyForDeckList}
+          copyDeckImageToClipboard={copyDeckImageToClipboard}
+          downloadDeckImage={downloadDeckImage}
+          onSaveDeck={onSaveDeck}
+          draftHref="/draft"
+          gameHref="https://unityroom.com/games/anokorotcg"
+        />
+      <button onClick={()=>{
+        playClick();
+        setMenuOpen(o=>!o);
+      }}
+      data-ignore-export
+      style={{
+        position: 'absolute',
+        top: '7%',
+        right: '5%',
+        width: 32, height: 32,
+        borderRadius: 4,
+        fontSize: 24,
+        background: 'rgba(0,0,0,0.5)',
+        border: 'none',
+        cursor: 'pointer',
+      }}>
+        ☰
+      </button>  
       {/* ドラフト画面 */}
       <div
         className="draft-ui"
@@ -379,7 +435,7 @@ const handleReset = () => {
                     <img
                       src={`/images/${card.id}.png`}
                       alt={card.name}
-                      onClick={() => openPreview(idx)}
+                      onClick={() => {playClick();openPreview(idx)}}
                       style={{
                         width: '100%',
                         cursor: hasPickedAll ? 'not-allowed' : 'pointer',
@@ -388,7 +444,7 @@ const handleReset = () => {
                       }}
                     />
                     <div
-                      onClick={() => openPreview(idx)}
+                      onClick={() => {playClick();openPreview(idx)}}
                       style={{
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -486,7 +542,7 @@ const handleReset = () => {
                 {deck.map((card, i) => (
                   <li
                     key={i}
-                    onClick={() => openHistoryModal(i)}
+                    onClick={() => {playClick();openHistoryModal(i)}}
                     style={{
                       padding: '0.25rem 0',
                       borderBottom: '1px solid #eee',
@@ -512,7 +568,7 @@ const handleReset = () => {
               <button
                 className="btn"
                 disabled={!hasPickedAll}
-                onClick={() => setIsReadyForDeckList(true)}
+                onClick={() => {playClick();setIsReadyForDeckList(true)}}
                 style={{
                   opacity: hasPickedAll ? 1 : 0.5,
                   cursor: hasPickedAll ? 'pointer' : 'not-allowed',
@@ -565,7 +621,7 @@ const handleReset = () => {
       return (
         <div
           key={i}
-          onClick={() => openDeckModal(i)}
+          onClick={() => {playClick();openDeckModal(i)}}
           style={{
             display: 'flex',
             alignItems: 'stretch',
@@ -678,5 +734,6 @@ const handleReset = () => {
         />
       )}
     </main>
+    </>
   );
 }
