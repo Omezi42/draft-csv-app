@@ -1,8 +1,7 @@
-// src/app/components/Menu.tsx
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAudio } from '../context/AudioContext';
 import { useRouter } from 'next/navigation';
 
@@ -10,7 +9,6 @@ type MenuProps = {
   menuOpen: boolean;
   menuMode: 'home' | 'draft' | 'deck';
   onToggle: () => void;
-  // ドラフト用
   showDeckList?: boolean;
   hasPickedAll?: boolean;
   handleReset?: () => void;
@@ -18,7 +16,6 @@ type MenuProps = {
   copyDeckImageToClipboard?: () => void;
   downloadDeckImage?: () => void;
   onSaveDeck?: () => void;
-  // 汎用
   draftHref?: string;
   gameHref?: string;
 };
@@ -39,12 +36,19 @@ export function Menu({
 }: MenuProps) {
   const router = useRouter();
   const { volume, setVolume } = useAudio();
+  const clickRef = useRef<HTMLAudioElement | null>(null);
 
-  const click = new Audio('/se/click.mp3');
+  // Audio を useEffect 内で初期化（SSR回避）
+  useEffect(() => {
+    clickRef.current = new Audio('/se/click.mp3');
+  }, []);
+
   const playClick = () => {
-    click.currentTime = 0;
-    click.volume = volume;
-    click.play().catch(() => {});
+    const audio = clickRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.volume = volume;
+    audio.play().catch(() => {});
   };
 
   if (!menuOpen) return null;
@@ -75,7 +79,7 @@ export function Menu({
           step={0.01}
           value={volume}
           onChange={e => setVolume(parseFloat(e.target.value))}
-          onMouseUp={playClick} // ← 連続再生防止のため、onChangeではなく onMouseUp
+          onMouseUp={playClick}
           style={{ width: '100%' }}
         />
       </label>
