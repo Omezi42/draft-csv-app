@@ -116,13 +116,19 @@ export default function DraftPage() {
   }, [pickCandidates]);
 
   useEffect(() => {
-    sePickRef.current = new Audio('/se/pick.mp3');
-  }, []);  
+    if (typeof window !== 'undefined') {
+      sePickRef.current = new Audio('/se/pick.mp3');
+    }
+  }, []); 
   useEffect(() => {
-    seModalRef.current = new Audio('/se/modal.mp3');
+    if (typeof window !== 'undefined') {
+      seModalRef.current = new Audio('/se/modal.mp3');
+    }
   }, []);
   useEffect(() => {
-    seClickRef.current = new Audio('/se/click.mp3');
+    if (typeof window !== 'undefined') {
+      seClickRef.current = new Audio('/se/click.mp3');
+    }
   }, []);
 
   const handleCardPick = (card: Card) => {
