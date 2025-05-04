@@ -26,8 +26,8 @@ export function CardModal({ cards, index, onClose, onPrev, onNext }: Props) {
             height={300}
             style={{
               objectFit: 'contain',
-              maxWidth: '100%',
               maxHeight: '100%',
+              maxWidth: '100%',
               marginLeft: '5vw'
             }}
           />

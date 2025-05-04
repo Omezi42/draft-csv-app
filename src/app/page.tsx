@@ -1,9 +1,10 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SavedDeck } from './types';
 import { Menu } from './components/Menu';
 import { useAudio } from './context/AudioContext';
+import ArenaExplanation from './components/ArenaExplanation';  // ArenaExplanation を追加
 
 export default function HomePage() {
   const [savedDecks, setSavedDecks] = useState<SavedDeck[]>([]);
@@ -80,7 +81,7 @@ export default function HomePage() {
           fontFamily: 'ChalkFont, sans-serif',
           fontSize: '1.25rem',
           color: '#fff',
-          margin: '1rem 0 3rem',
+          margin: '1rem 0 1rem',
         }}
       >
         あの頃の自作TCGで<br/>
@@ -123,10 +124,14 @@ export default function HomePage() {
       {/* 遊び方サマリー */}
       <section
         style={{
-          marginTop: '4rem',
+          marginTop: '1rem',
           color: '#fff',
         }}
       >
+              {/* アリーナ説明ボタンをヒーロー下に追加 */}
+      <div style={{ marginBottom: '3rem' }}>
+        <ArenaExplanation />
+      </div>
         <h2
           style={{
             fontFamily: 'ChalkFont, sans-serif',
