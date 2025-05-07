@@ -608,107 +608,115 @@ const handleReset = () => {
       marginBottom: '2rem',
       paddingBottom: '0',
       lineHeight: 1.2,
+      padding:'0 1rem',
     }}
   >
     アリーナデッキ
   </h2>
 
   <div
-    style={{
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridTemplateRows: 'repeat(10, auto)',
-      gap: '0.5rem',
-    }}
-  >
-    {sortedDeck.map((card, i) => {
-      const showCost = card.id !== prevId;
-      prevId = card.id;
-      return (
-        <div
-          key={i}
-          onClick={() => {playClick();openDeckModal(i)}}
-          style={{
-            display: 'flex',
-            alignItems: 'stretch',
-            gap: 0,
-            marginLeft: showCost ? 0 : 40,
-            backgroundColor: 'white',
-            borderRadius: 5,
-          }}
-        >
-          {showCost && (
-            <div
-              style={{
-                backgroundColor: '#4caf50',
-                color: 'white',
-                padding: '0 15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderTopLeftRadius: 4,
-                borderBottomLeftRadius: 4,
-                cursor: 'pointer',
-              }}
-            >
-              {card.cost}
-            </div>
-          )}
-
+  style={{
+    display: 'grid',
+    /* auto-fit + minmax で「幅150px以上は伸び縮み可」な列を自動生成 */
+    gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+    gridAutoFlow: 'column',
+    gridTemplateRows: 'repeat(10, auto)',
+    gap: '0.5rem',
+    padding: '0 1rem',
+  }}
+>
+  {sortedDeck.map((card, i) => {
+    const showCost = card.id !== prevId;
+    prevId = card.id;
+    return (
+      <div
+        key={i}
+        onClick={() => { playClick(); openDeckModal(i); }}
+        style={{
+          display: 'flex',
+          alignItems: 'stretch',
+          gap: 0,
+          marginLeft: showCost ? 0 : 40,
+          backgroundColor: 'white',
+          borderRadius: 5,
+        }}
+      >
+        {showCost && (
           <div
             style={{
-              position: 'relative',
-              border: '1px solid #999',
-              borderRadius: showCost ? '0 4px 4px 0' : '4px',
-              padding: 8,
+              backgroundColor: '#4caf50',
+              color: 'white',
+              padding: '0 15px',
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              flexGrow: 1,
+              justifyContent: 'center',
+              borderTopLeftRadius: 4,
+              borderBottomLeftRadius: 4,
               cursor: 'pointer',
             }}
           >
-            <span
-              style={{
-                display: 'inline-block',
-                width: '150px',
-                fontWeight: 'bold',
-                color: 'black',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {card.name}
-            </span>
-            <div
+            {card.cost}
+          </div>
+        )}
+
+        <div
+          style={{
+            position: 'relative',
+            border: '1px solid #999',
+            borderRadius: showCost ? '0 4px 4px 0' : '4px',
+            padding: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            flexGrow: 1,
+            cursor: 'pointer',
+          }}
+        >
+          {/* 可変幅に対応させるため、固定幅を解除 */}
+          <span
+            style={{
+              display: 'inline-block',
+              /* 幅は親グリッド（minmax）に任せる or % 指定 */
+              fontWeight: 'bold',
+              color: 'black',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {card.name}
+          </span>
+          <div
+            style={{
+              position: 'absolute',
+              width: '70px',
+              height: '30px',
+              overflow: 'hidden',
+              left: 'calc(60%)',
+            }}
+          >
+            <img
+              src={`/images/${card.id}.png`}
+              alt={card.name}
               style={{
                 position: 'absolute',
-                width: '70px',
-                height: '30px',
-                overflow: 'hidden',
-                marginLeft: '90px',
+                top: '50%',
+                right: 0,
+                /* 固定100pxをやめて、maxHeightで調整 */
+                maxHeight: '100px',
+                width: 'auto',
+                opacity: 0.2,
+                zIndex: 0,
+                transform: 'translateY(-30%)',
+                objectFit: 'contain',
               }}
-            >
-              <img
-                src={`/images/${card.id}.png`}
-                alt={card.name}
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  right: 0,
-                  height: 100,
-                  width: 'auto',
-                  opacity: 0.2,
-                  zIndex: 0,
-                  transform: 'translateY(-30%)',
-                  objectFit: 'contain',
-                }}
-              />
-            </div>
+            />
           </div>
         </div>
-      );
-    })}
-  </div>
+      </div>
+    );
+  })}
+</div>
 </section>
 
       {/** モーダル群（共通） */}
